@@ -6,11 +6,13 @@ import (
 	"go-gin-framework/service"
 	"go-gin-framework/validators"
 	"gopkg.in/go-playground/validator.v9"
+	"net/http"
 )
 
 type VideoController interface {
 	Save(ctx *gin.Context) error
 	FindAll() []entity.Video
+	ShowAll(ctx *gin.Context)
 }
 
 type controller struct {
@@ -46,4 +48,13 @@ func (controller *controller) Save(ctx *gin.Context) error {
 
 	controller.service.Save(video)
 	return nil
+}
+
+func (controller *controller) ShowAll(ctx *gin.Context) {
+	videos := controller.service.FindAll()
+	data := gin.H{
+		"title":  "Video Page",
+		"videos": videos,
+	}
+	ctx.HTML(http.StatusOK, "index.html", data)
 }
