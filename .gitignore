@@ -27,7 +27,6 @@ application-*.yml
 
 #execute file
 main
-bin/
 
 #log
 gin.log
