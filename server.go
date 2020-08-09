@@ -31,9 +31,9 @@ func main() {
 
 	server.LoadHTMLGlob("templates/*.html")
 
-	server.Use(gin.Recovery(), middlewares.Logger(), middlewares.BasicAuth(), gindump.Dump())
+	server.Use(gin.Recovery(), middlewares.Logger(), gindump.Dump())
 
-	apiRoutes := server.Group("/api")
+	apiRoutes := server.Group("/api", middlewares.BasicAuth())
 	{
 		apiRoutes.GET("/videos", func(ctx *gin.Context) {
 			ctx.JSON(200, videoController.FindAll())
@@ -54,5 +54,11 @@ func main() {
 		viewRoutes.GET("/videos", videoController.ShowAll)
 	}
 
-	_ = server.Run(":8080")
+	// We can setup this env variable from EB console
+	port := os.Getenv("PORT")
+	// Elastic Beanstalk forwards requests to port 5000
+	if port == "" {
+		port = "5000"
+	}
+	_ = server.Run(":" + port)
 }
